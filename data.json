@@ -1,0 +1,31 @@
+{
+  "personelListesi": [
+    {
+      "id": 1,
+      "ad": "Master",
+      "soyad": "Admin",
+      "tcNo": "11111111111",
+      "telefon": "5555555555",
+      "iseGirisTarihi": "2024-01-01",
+      "gorev": "Master Admin",
+      "kullaniciAdi": "admin",
+      "sifre": "457301779361982",
+      "isAdmin": true,
+      "isDefaultAdmin": true,
+      "isHidden": true
+    },
+    {
+      "id": 1740952307651,
+      "ad": "Civan",
+      "soyad": "Afrinli",
+      "tcNo": "Admin",
+      "telefon": "Admin",
+      "iseGirisTarihi": "2025-03-02",
+      "gorev": "Admin",
+      "kullaniciAdi": "civan",
+      "sifre": "55555",
+      "isAdmin": true
+    }
+  ],
+  "mesaiKayitlari": []
+}

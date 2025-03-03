@@ -1,0 +1,17 @@
+{
+  "personelListesi": [
+    {
+      "id": 1,
+      "ad": "Sistem",
+      "soyad": "Yöneticisi",
+      "tcNo": "11111111111",
+      "telefon": "555-555-5555",
+      "iseGirisTarihi": "2024-01-01",
+      "gorev": "Admin",
+      "isAdmin": true,
+      "kullaniciAdi": "admin",
+      "sifre": "admin"
+    }
+  ],
+  "mesaiKayitlari": []
+}

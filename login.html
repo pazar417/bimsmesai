@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesai Takip - Giriş</title>
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .login-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .login-form input {
+            width: 93%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(to right, #45a049, #3d8b40);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .login-type-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .login-type-btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .login-type-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .login-type-btn:not(.active) {
+            background: #f0f0f0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">Mesai Takip Sistemi</h2>
+        
+        <div class="login-type-selector">
+            <button class="login-type-btn active" onclick="changeLoginType('admin')">Admin Girişi</button>
+            <button class="login-type-btn" onclick="changeLoginType('personel')">Personel Girişi</button>
+        </div>
+
+        <form id="adminLoginForm" class="login-form">
+            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+            <input type="password" id="password" placeholder="Şifre" required>
+            <button type="submit" class="login-button">Giriş Yap</button>
+        </form>
+
+        <form id="personelLoginForm" class="login-form" style="display: none;">
+            <input type="text" id="tcno" placeholder="TC Kimlik No" maxlength="11" required>
+            <button type="submit" class="login-button">Giriş Yap</button>
+        </form>
+
+        <p id="errorMessage" class="error-message"></p>
+    </div>
+
+    <!-- Script yüklemelerini güncelleyin -->
+    <script>
+        // Global SessionManager nesnesini tanımla
+        window.SessionManager = window.SessionManager || {};
+    </script>
+    <script src="sessionManager.js"></script>
+    <script src="dataManager.js"></script>
+    <script>
+        // SessionManager kontrolü
+        if (!window.SessionManager) {
+            console.error('SessionManager yüklenemedi!');
+            alert('Oturum yönetimi başlatılamadı. Lütfen sayfayı yenileyin.');
+        }
+        
+        function changeLoginType(type) {
+            document.querySelectorAll('.login-type-btn').forEach(btn => 
+                btn.classList.remove('active')
+            );
+            document.querySelector(`button[onclick="changeLoginType('${type}')"]`).classList.add('active');
+            
+            document.getElementById('adminLoginForm').style.display = type === 'admin' ? 'block' : 'none';
+            document.getElementById('personelLoginForm').style.display = type === 'personel' ? 'block' : 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                const data = await DataManager.loadData();
+                // Admin kontrolü değişti
+                const admin = data.personelListesi.find(p => 
+                    p.isAdmin === true && 
+                    p.kullaniciAdi === username && 
+                    p.sifre === password
+                );
+
+                if (admin) {
+                    SessionManager.setUserSession({
+                        isAdmin: true,
+                        adminKullanici: username,
+                        ad: admin.ad,
+                        soyad: admin.soyad
+                    });
+                    window.location.replace('index.html');
+                } else {
+                    errorMessage.textContent = 'Hatalı kullanıcı adı veya şifre!';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Giriş hatası:', error);
+                errorMessage.textContent = 'Bir hata oluştu, lütfen tekrar deneyin.';
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        document.getElementById('personelLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const tcno = document.getElementById('tcno').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                const data = await DataManager.loadData();
+                // Personel kontrolü değişti
+                const personel = data.personelListesi.find(p => 
+                    (!p.isAdmin || p.isAdmin === false) && 
+                    p.tcNo === tcno
+                );
+
+                if (personel) {
+                    SessionManager.setUserSession({
+                        isAdmin: false,
+                        personelId: personel.id,
+                        ad: personel.ad,
+                        soyad: personel.soyad
+                    });
+                    window.location.replace('index.html');
+                } else {
+                    errorMessage.textContent = 'TC Kimlik No bulunamadı!';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Giriş hatası:', error);
+                errorMessage.textContent = 'Bir hata oluştu, lütfen tekrar deneyin.';
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        // Oturum kontrolü
+        if (SessionManager.getUserSession()) {
+            window.location.replace('index.html');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Varsayılan admin kontrolü
+            DataManager.loadData().then(data => {
+                // isDefaultAdmin özelliğine göre kontrol et
+                const varsayilanAdminVar = data.personelListesi.some(p => p.isDefaultAdmin === true);
+                
+                if (!varsayilanAdminVar) {
+                    const varsayilanAdmin = {
+                        id: 1,
+                        ad: "Master",
+                        soyad: "",
+                        tcNo: "111122223333",
+                        telefon: "5555555555",
+                        iseGirisTarihi: "2025-01-01",
+                        gorev: "Master",
+                        kullaniciAdi: "admin",
+                        sifre: "457301779361982",
+                        isAdmin: true,
+                        isDefaultAdmin: true,
+                        isHidden: true // Gizlilik özelliği eklendi
+                    };
+                    
+                    data.personelListesi.push(varsayilanAdmin);
+                    DataManager.saveData(data);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesai Takip Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-controls">
+            <h1>Mesai Takip Sistemi</h1>
+            <div class="controls-right">
+                <span id="userInfo" class="user-info"></span>
+                <div class="buttons-container">
+                    <div id="adminControls" style="display: none;">
+                        <button onclick="adminYonetimModal()" class="admin-button">Admin Yönetimi</button>
+                    </div>
+                    <button onclick="cikisYap()" class="logout-button">Çıkış</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Yönetim Modal -->
+        <div id="adminYonetimModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Yönetim Paneli</h2>
+                
+                <!-- Tab Menüsü -->
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="adminTabDegistir('personelYonetim')">Personel Yönetimi</button>
+                    <button class="tab-btn" onclick="adminTabDegistir('adminYonetim')">Admin Yönetimi</button>
+                    <button class="tab-btn" onclick="adminTabDegistir('profilYonetim')">Profil Yönetimi</button>
+                </div>
+
+                <!-- Personel Yönetimi Tab -->
+                <div id="personelYonetimForm" class="admin-tab-content">
+                    <div class="yonetim-butonlar">
+                        <button onclick="yeniPersonelModalAc()" class="yonetim-btn">Yeni Personel Ekle</button>
+                        <button onclick="personelListesiGoster()" class="yonetim-btn">Personel Listesi</button>
+                    </div>
+                </div>
+
+                <!-- Admin Yönetimi Tab -->
+                <div id="adminYonetimForm" class="admin-tab-content" style="display: none;">
+                    <div class="yonetim-butonlar">
+                        <button onclick="yeniAdminEkleFormGoster()" class="yonetim-btn">Yeni Admin Ekle</button>
+                        <button onclick="adminListesiGoster()" class="yonetim-btn">Admin Listesi</button>
+                    </div>
+                    
+                    <!-- Yeni Admin Ekleme Formu -->
+                    <div id="yeniAdminForm" style="display: none;">
+                        <form id="yeniAdminKayit">
+                            <div class="form-group">
+                                <input type="text" id="adminKullaniciAdi" placeholder="Kullanıcı Adı" required>
+                                <input type="password" id="adminSifre" placeholder="Şifre" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="adminAd" placeholder="Ad" required>
+                                <input type="text" id="adminSoyad" placeholder="Soyad" required>
+                            </div>
+                            <button type="submit">Admin Ekle</button>
+                        </form>
+                    </div>
+
+                    <!-- Admin Listesi Tablosu -->
+                    <div id="adminListesiTablo" style="display: none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ad Soyad</th>
+                                    <th>Kullanıcı Adı</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminListesi"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Profil Yönetimi Tab -->
+                <div id="profilYonetimForm" class="admin-tab-content" style="display: none;">
+                    <div class="profil-form-grup">
+                        <h3>Şifre Değiştir</h3>
+                        <form id="sifreDegistir">
+                            <div class="form-group">
+                                <input type="password" id="mevcutSifre" placeholder="Mevcut Şifre" required>
+                                <input type="password" id="yeniSifre" placeholder="Yeni Şifre" required>
+                                <input type="password" id="yeniSifreTekrar" placeholder="Yeni Şifre Tekrar" required>
+                            </div>
+                            <button type="submit">Şifre Değiştir</button>
+                        </form>
+                    </div>
+
+                    <div class="profil-form-grup">
+                        <h3>Kullanıcı Adı Değiştir</h3>
+                        <form id="kullaniciAdiDegistir">
+                            <div class="form-group">
+                                <input type="password" id="kullaniciAdiIcinSifre" placeholder="Mevcut Şifre" required>
+                                <input type="text" id="yeniKullaniciAdi" placeholder="Yeni Kullanıcı Adı" required>
+                            </div>
+                            <button type="submit">Kullanıcı Adı Değiştir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Personel Kayıt Modal -->
+        <div id="personelModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button onclick="geriDonPersonelModal()" class="geri-btn">
+                        <i class="fas fa-arrow-left"></i> Geri
+                    </button>
+                    <span class="close">&times;</span>
+                </div>
+                <h2>Yeni Personel Kayıt</h2>
+                <form id="personelForm">
+                    <div class="form-group">
+                        <input type="text" id="personelAd" placeholder="Adı" required>
+                        <input type="text" id="personelSoyad" placeholder="Soyadı" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="personelTc" placeholder="TC Kimlik No" maxlength="11" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="personelTelefon" placeholder="Cep Telefonu" required>
+                        <label for="iseGirisTarihi">İşe Giriş Tarihi</label>
+                        <input type="date" id="iseGirisTarihi" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="personelGorev" placeholder="Görevi" required>
+                    </div>
+                    <button type="submit">Kaydet</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Personel Liste Modal -->
+        <div id="personelListeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button onclick="geriDonPersonelListe()" class="geri-btn">
+                        <i class="fas fa-arrow-left"></i> Geri
+                    </button>
+                    <span class="close">&times;</span>
+                </div>
+                <h2>Personel Listesi</h2>
+                <div class="personel-liste">
+                    <table id="personelTablo">
+                        <thead>
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th>TC No</th>
+                                <th>Telefon</th>
+                                <th>Görev</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="personelListesi"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personel Düzenleme Modal -->
+        <div id="personelDuzenleModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button onclick="geriDonPersonelDuzenle()" class="geri-btn">
+                        <i class="fas fa-arrow-left"></i> Geri
+                    </button>
+                    <span class="close">&times;</span>
+                </div>
+                <h2>Personel Düzenle</h2>
+                <form id="personelDuzenleForm">
+                    <input type="hidden" id="duzenlePersonelId">
+                    <div class="form-group">
+                        <input type="text" id="duzenleAd" placeholder="Adı" required>
+                        <input type="text" id="duzenleSoyad" placeholder="Soyadı" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="duzenleTc" placeholder="TC Kimlik No" maxlength="11" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="duzenleTelefon" placeholder="Cep Telefonu" required>
+                        <input type="date" id="duzenleIseGirisTarihi" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="duzenleGorev" placeholder="Görevi" required>
+                    </div>
+                    <button type="submit">Güncelle</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mesai Formu Paneli'ni admin kontrolüne al -->
+        <div class="panel mesai-giris" id="mesaiGirisPanel" style="display: none;">
+            <div class="panel-header">
+                <h2 class="panel-title">Mesai Girişi</h2>
+            </div>
+            <form id="mesaiForm">
+                <div class="form-group personel-secim-grup">
+                    <label>Personel Seçimi</label>
+                    <div id="personelCheckboxList" class="personel-checkbox-list">
+                        <!-- Checkboxlar JavaScript ile doldurulacak -->
+                    </div>
+                    <div id="seciliPersoneller" class="secili-personeller"></div>
+                </div>
+                <div class="form-group">
+                    <label>Tarih</label>
+                    <input type="date" id="tarih" required>
+                </div>
+                <div class="form-group saat-grup">
+                    <div>
+                        <label>Başlangıç Saati</label>
+                        <input type="time" id="baslangicSaati" value="08:00" required>
+                    </div>
+                    <div>
+                        <label>Bitiş Saati</label>
+                        <input type="time" id="bitisSaati" value="18:00" required>
+                    </div>
+                </div>
+                <button type="submit" class="buyuk-button">Mesai Ekle</button>
+            </form>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- Mesai Kayıtları Paneli -->
+        <div class="mesai-listesi">
+            <div class="liste-kontroller panel-header">
+                <h2 class="panel-title">Mesai Kayıtları</h2>
+                <div class="goruntuleme-secenekleri">
+                    <button id="gunlukGoruntule" class="tab-button active">Günlük Görünüm</button>
+                    <button id="aylikGoruntule" class="tab-button">Aylık Özet</button>
+                </div>
+            </div>
+            
+            <div id="gunlukListe" class="liste-content">
+                <div class="tarih-filtre">
+                    <div class="date-range">
+                        <div class="date-inputs">
+                            <div>
+                                <label>Başlangıç Tarihi</label>
+                                <input type="date" id="baslangicTarihi" placeholder="Başlangıç tarihi seçin">
+                            </div>
+                            <div>
+                                <label>Bitiş Tarihi</label>
+                                <input type="date" id="bitisTarihi" placeholder="Bitiş tarihi seçin">
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="tarihFiltrele()" class="filtre-btn">Filtrele</button>
+                </div>
+                <table id="mesaiTablo">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Tarih</th>
+                            <th style="width: 20%;">Çalışma Saatleri</th>
+                            <th style="width: 20%;">Normal Mesai Durumu</th>
+                            <th style="width: 20%;">Zamlı Mesai Durumu</th>
+                            <th style="width: 20%;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mesaiListesi"></tbody>
+                </table>
+            </div>
+
+            <div id="aylikOzet" class="liste-content" style="display: none;">
+                <div class="ay-secim">
+                    <input type="month" id="aySecim">
+                </div>
+                <table id="aylikMesaiTablo">
+                    <thead>
+                        <tr>
+                            <th>Personel</th>
+                            <th>Normal Mesai Durumu</th>
+                            <th>Zamlı Mesai Durumu</th>
+                            <th>Detaylar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="aylikMesaiListesi">
+                        <!-- JavaScript ile doldurulacak -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Script sıralamasını düzelt -->
+    <script src="sessionManager.js"></script>
+    <script src="dataManager.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
