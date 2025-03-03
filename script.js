@@ -388,8 +388,10 @@ function hesaplaMesaiSaati(baslangic, bitis) {
 
 // Bugünün tarihini ayarlama fonksiyonu
 function bugunTarihAyarla() {
-    const bugun = new Date().toISOString().split('T')[0];
-    document.getElementById('tarih').value = bugun;
+    const bugun = new Date();
+    // Tarih formatını YYYY-MM-DD şeklinde ayarla
+    const formatliTarih = bugun.toISOString().split('T')[0];
+    document.getElementById('tarih').value = formatliTarih;
 }
 
 // Tarih formatı için yardımcı fonksiyon
@@ -570,7 +572,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Tarih alanlarını varsayılan değerlere ayarla
     document.getElementById('baslangicSaati').value = "08:00";
     document.getElementById('bitisSaati').value = "18:00";
-    bugunTarihAyarla();
+    bugunTarihAyarla(); // Bugünün tarihini ayarla
 
     // Başlangıç ve bitiş tarihlerini ayarla
     const bugun = new Date();
